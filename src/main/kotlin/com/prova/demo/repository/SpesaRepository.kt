@@ -16,8 +16,11 @@ interface SpesaRepository : JpaRepository<Spesa, Long> {
    @Query("""
        SELECT s.categoria.nome, SUM(s.importo)
        FROM Spesa s
-       WHERE s.user.id = :userId AND s.data BETWEEN :inizio AND :fine
+       WHERE s.user.household.id = :householdId AND s.data BETWEEN :inizio AND :fine
        GROUP BY s.categoria.nome
    """)
-   fun totalePerCategoria(userId: Long, inizio: LocalDate, fine: LocalDate): List<Pair<String, BigDecimal>>
+   fun totalePerCategoria(householdId: Long, inizio: LocalDate, fine: LocalDate): List<Pair<String, BigDecimal>>
+
+    @Query("SELECT s FROM Spesa s WHERE s.user.household.id = :householdId")
+    fun findByUserHouseholdId(householdId: Long): List<Spesa>
 }

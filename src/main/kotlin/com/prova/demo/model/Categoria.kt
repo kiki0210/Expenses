@@ -21,6 +21,6 @@ data class Categoria(
     var colore: String? = null, // es. "#FF5733" per la UI Android
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    var user: User,
+    @JoinColumn(name = "household_id", nullable = false)
+    var household: Household,
 )

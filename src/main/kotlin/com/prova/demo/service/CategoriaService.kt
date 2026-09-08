@@ -4,25 +4,27 @@ import com.prova.demo.dto.CategoriaRequest
 import com.prova.demo.dto.CategoriaResponse
 import com.prova.demo.model.Categoria
 import com.prova.demo.repository.CategoriaRepository
-import com.prova.demo.repository.UserRepository
+import com.prova.demo.repository.HouseholdRepository
 import org.springframework.stereotype.Service
 
 @Service
 class CategoriaService(
     private val repository: CategoriaRepository,
-    private val userRepository: UserRepository
+    private val householdRepository: HouseholdRepository
 ) {
-    fun getAllByUser(userId: Long): List<CategoriaResponse> = repository.findByUserId(userId).map { it.toResponse() }
+    fun getAllByHousehold(householdId: Long): List<CategoriaResponse> = repository.findAllByHouseholdId(householdId).map { it.toResponse() }
 
-    fun create(userId: Long, request: CategoriaRequest): CategoriaResponse {
-        val user = userRepository.findById(userId).orElseThrow { NoSuchElementException("User $userId not found") }
-        val categoria = Categoria(nome = request.nome, colore = request.colore, user = user)
+    fun create(householdId: Long, request: CategoriaRequest): CategoriaResponse {
+      if (repository.existsByNomeAndHouseholdId(request.nome,householdId)) {
+          throw IllegalArgumentException("Nome ${request.nome} exists in database")
+      }
+        val categoria = Categoria(nome = request.nome, household =householdRepository.findById(householdId).orElseThrow{
+            NoSuchElementException("Nessuna categoria associata")}, colore =request.colore)
         return repository.save(categoria).toResponse()
     }
 
-    fun delete(userId: Long, id: Long) {
-        val categoria = repository.findByIdAndUserId(id, userId)
-            ?: throw NoSuchElementException("Categoria $id non trovata per questo utente")
+    fun delete(householdId: Long, id: Long) {
+        val categoria = repository.findByIdAndHouseholdId(id, householdId).orElseThrow { NoSuchElementException("Categoria $id non trovata a questa household") }
         repository.delete(categoria)
     }
 

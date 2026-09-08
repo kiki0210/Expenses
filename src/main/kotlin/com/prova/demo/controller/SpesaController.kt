@@ -28,7 +28,7 @@ class SpesaController(private val service: SpesaService,
 
     @GetMapping
     fun getAll(): List<SpesaResponse> =
-        service.getAllByUser(authProvider.getCurrentUserId())
+        service.getAllByHouseholdId(authProvider.getCurretHouseholdId())
 
     @PostMapping
     fun create(

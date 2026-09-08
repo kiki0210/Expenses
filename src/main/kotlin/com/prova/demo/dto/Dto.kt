@@ -16,7 +16,9 @@ data class CategoriaResponse(val id: Long, val nome: String, val colore: String?
 data class RegistrazioneRequest(
     @field:Email val email: String,
     @field:NotBlank val nome: String,
-    @field:Size(min = 6) val password: String
+    @field:Size(min = 6) val password: String,
+    val newHousehold: String? = null,
+    val existentHousehold:String? = null
 )
 
 data class LoginRequest(
@@ -31,7 +33,7 @@ data class AuthResponse(
     val nome: String
 )
 
-data class UserResponse(val id: Long, val email: String, val nome: String)
+data class UserResponse(val id: Long, val email: String, val nome: String, val householdId : Long?,val isHouseholdAdmin: Boolean)
 
 data class SpesaRequest(
     @field:NotBlank val descrizione: String,

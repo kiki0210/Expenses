@@ -15,5 +15,12 @@ data class User(
     var nome: String,
 
     @Column(nullable = false)
-    var password: String
+    var password: String,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "household_id")
+    var household: Household? = null,
+
+    @Column(nullable = false)
+    var isHouseholdAdmin:Boolean = false,
 )
