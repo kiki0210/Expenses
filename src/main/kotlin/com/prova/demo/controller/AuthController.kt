@@ -3,7 +3,9 @@ package com.prova.demo.controller
 import com.prova.demo.dto.AuthResponse
 import com.prova.demo.dto.LoginRequest
 import com.prova.demo.dto.RegistrazioneRequest
+import com.prova.demo.model.Household
 import com.prova.demo.model.User
+import com.prova.demo.repository.HouseholdRepository
 import com.prova.demo.repository.UserRepository
 import com.prova.demo.security.JwtService
 import jakarta.validation.Valid
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/auth")
 class AuthController(
     private val userRepository: UserRepository,
+    private val householdRepository: HouseholdRepository,
     private val passwordEncoder: PasswordEncoder,
     private val auhtenticationManager: AuthenticationManager,
     private val jwtService: JwtService
@@ -31,10 +34,27 @@ class AuthController(
             throw IllegalArgumentException("Email già esistente")
         }
 
+        val household = when {
+            request.newHousehold != null -> {
+                if (householdRepository.existsByName(request.newHousehold)) {
+                    throw IllegalArgumentException("Una casa con questo nome esiste già")
+                }
+                val newHousehold = Household(name = request.newHousehold)
+                householdRepository.save(newHousehold)
+            }
+            request.existentHousehold != null -> {
+                householdRepository.findByName(request.existentHousehold)
+                    .orElseThrow { IllegalArgumentException("Casa non trovata") }
+            }
+            else -> null
+        }
+
         val user = User(
             email = request.email,
             nome = request.nome,
-            password = passwordEncoder.encode(request.password)!!
+            password = passwordEncoder.encode(request.password)!!,
+            household = household,
+            isHouseholdAdmin = household != null && request.newHousehold != null
         )
 
         val saved = userRepository.save(user)

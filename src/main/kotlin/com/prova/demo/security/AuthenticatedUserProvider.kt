@@ -18,6 +18,6 @@ class AuthenticatedUserProvider(private val userRepository: UserRepository) {
     fun getCurretHouseholdId(): Long {
         val email = SecurityContextHolder.getContext().authentication?.name ?: ""
         val user = userRepository.findByEmail(email).orElseThrow { IllegalStateException("Utente autenticato non trovato") }
-        return user.household?.id?: throw IllegalStateException("L'utente non appartiene a nessuna casa")
+        return user.household?.id ?: throw IllegalStateException("L'utente non appartiene a nessuna casa")
     }
 }

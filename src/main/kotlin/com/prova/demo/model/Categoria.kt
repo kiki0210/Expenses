@@ -6,7 +6,7 @@ import jakarta.persistence.*
 @Entity
 @Table(
     name = "categorie", uniqueConstraints = [
-        UniqueConstraint(columnNames = ["nome", "user_id"]) // stesso nome ok per utenti diversi
+        UniqueConstraint(columnNames = ["nome", "household_id"]) // stesso nome ok per household diversi
     ]
 )
 
